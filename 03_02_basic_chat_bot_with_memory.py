@@ -1,8 +1,7 @@
 import streamlit as st
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import LLMChain
 from langchain.llms.bedrock import Bedrock
 from langchain.chains import ConversationChain
+from langchain.schema import HumanMessage,SystemMessage,AIMessage
 import boto3
 
 
@@ -16,19 +15,21 @@ llm = Bedrock(model_id="anthropic.claude-instant-v1",
               model_kwargs={"temperature":0.7})
 
 #Streamlit refreshes whole page so If you want to use memory make sure you save in session or cookie
-if 'memory' not in st.session_state:
-    st.session_state['memory'] = ConversationBufferMemory()
-    
+if 'history' not in st.session_state:
+    st.session_state['history']=[
+        SystemMessage(content="You are a AI assitant who reply in Poem format")
+    ]
+   
+llm_chain = ConversationChain(verbose=True, llm=llm)
 
-
-bot_memory = st.session_state['memory']
-llm_chain = ConversationChain(verbose=True, llm=llm, memory=bot_memory)
 
 st.title("Bedrock simple LLM")
 input_text = st.text_input("Ask Question:")
 
 if input_text:
-    st.write(llm_chain(input_text)['response'])
-    st.session_state['memory'] = bot_memory
+    st.session_state['history'].append(HumanMessage(content=input_text))
+    answer=llm_chain(st.session_state['history'])['response']
+    st.session_state['history'].append(AIMessage(content=answer))
+    st.write(answer)
     with st.expander('History'):
-        st.info(bot_memory.buffer)
+        st.info(st.session_state['history'])
