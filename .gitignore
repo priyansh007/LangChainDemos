@@ -1,2 +1,4 @@
 myLib/
 .Ds_Store
+.env
+data/
