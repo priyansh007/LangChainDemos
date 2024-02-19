@@ -7,3 +7,6 @@ tiktoken==0.6.0
 PyPDF==4.0.1
 pinecone-client==3.0.3
 python-dotenv==1.0.1
+sentence-transformers==2.3.1
+uvicorn==0.27.1
+ctransformers==0.2.27

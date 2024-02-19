@@ -2,3 +2,4 @@ myLib/
 .Ds_Store
 .env
 data/
+model/
